@@ -1,0 +1,82 @@
+[
+  {
+    "id": "gpt-4o",
+    "name": "GPT-4o",
+    "endpoint": "https://openai.com/gpt-4o",
+    "apiKey": "pseudo-api-key-for-gpt-4o",
+    "mockAvailablity": 0.99,
+    "latency": 1.2
+  },
+  {
+    "id": "gpt-4",
+    "name": "GPT-4",
+    "endpoint": "https://openai.com/gpt-4",
+    "apiKey": "pseudo-api-key-for-gpt-4",
+    "mockAvailablity": 0.95,
+    "latency": 2.8
+  },
+  {
+    "id": "gpt-3.5-turbo",
+    "name": "GPT-3.5 Turbo",
+    "endpoint": "https://openai.com/gpt-3.5-turbo",
+    "apiKey": "pseudo-api-key-for-gpt-3.5-turbo",
+    "mockAvailablity": 0.7,
+    "latency": 5.4
+  },
+  {
+    "id": "claude-3-opus",
+    "name": "Claude-3 Opus",
+    "endpoint": "https://anthropic.com/claude-3-opus",
+    "apiKey": "pseudo-api-key-for-claude-3-opus",
+    "mockAvailablity": 0.01,
+    "latency": 1.7
+  },
+  {
+    "id": "claude-4-sonnet",
+    "name": "Claude-4 Sonnet",
+    "endpoint": "https://anthropic.com/claude-4-sonnet",
+    "apiKey": "pseudo-api-key-for-claude-4-sonnet",
+    "mockAvailablity": 0.96,
+    "latency": 5.3
+  },
+  {
+    "id": "claude-3-haiku",
+    "name": "Claude-3 Haiku",
+    "endpoint": "https://anthropic.com/claude-3-haiku",
+    "apiKey": "pseudo-api-key-for-claude-3-haiku",
+    "mockAvailablity": 0.01,
+    "latency": 1.1
+  },
+  {
+    "id": "gemini-pro",
+    "name": "Gemini Pro",
+    "endpoint": "https://gemini.google.com/pro",
+    "apiKey": "pseudo-api-key-for-gemini-pro",
+    "mockAvailablity": 0.92,
+    "latency": 1.9
+  },
+  {
+    "id": "llama-2-70b",
+    "name": "Llama 2 70B",
+    "endpoint": "https://meta.ai/llama-2-70b",
+    "apiKey": "pseudo-api-key-for-llama-2-70b",
+    "mockAvailablity": 0.88,
+    "latency": 2.5
+  },
+  {
+    "id": "palm-2",
+    "name": "PaLM 2",
+    "endpoint": "https://palm.google.com/2",
+    "apiKey": "pseudo-api-key-for-palm-2",
+    "mockAvailablity": 0.2,
+    "latency": 2.2
+  },
+  {
+    "id": "mistral-large",
+    "name": "Mistral Large",
+    "endpoint": "https://mistral.ai/large",
+    "apiKey": "pseudo-api-key-for-mistral-large",
+    "mockAvailablity": 0.1,
+    "latency": 2.6
+  }
+]

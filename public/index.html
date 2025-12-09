@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Health Monitor</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .healthy {
+        color: green;
+      }
+
+      .unhealthy {
+        color: red;
+      }
+
+      .history {
+        display: flex;
+        gap: 2px;
+      }
+
+      .status {
+        display: inline-block;
+        width: 15px;
+        height: 10px;
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>LLM Health Monitor</h1>
+    <table id="modelsTable">
+      <thead>
+        <tr>
+          <th>Model ID</th>
+          <th>Model Name</th>
+          <th>Action</th>
+          <th>Healthy?</th>
+          <th>History (Last 10)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script>
+      async function fetchModels() {
+        try {
+          const response = await fetch("/api/models");
+          const models = await response.json();
+          displayModels(models);
+        } catch (error) {
+          console.error("Error fetching models:", error);
+        }
+      }
+
+      function displayModels(models) {
+        const tbody = document.querySelector("#modelsTable tbody");
+
+        let tableHTML = "";
+
+        models.forEach((model) => {
+          // History HTML
+          let historyHTML = "";
+          model.history.forEach((status) => {
+            historyHTML += `<div class="status ${status.isHealthy ? "healthy" : "unhealthy"}" title="${new Date(status.timestamp).toLocaleString()}">${status.isHealthy ? "Y" : "N"}</div>`;
+          });
+
+          tableHTML += `
+                    <tr>
+                        <td>${model.id}</td>
+                        <td>${model.name}</td>
+                        <td>
+                          <a href="#" onclick="use('${model.id}')">Use</a>
+                          <a href="#" onclick="remove('${model.id}')">Remove</a>
+                        </td>
+                        <td><span class="${model.isHealthy ? "healthy" : "unhealthy"}"
+                            >${model.isHealthy ? "Yes" : "No"}</span></td>
+                        <td><div class="history">${historyHTML}</div></td>
+                    </tr>
+                `;
+        });
+
+        tbody.innerHTML = tableHTML;
+      }
+
+      async function use(modelId) {
+        event.preventDefault();
+        const messageDiv = document.getElementById("Message");
+        messageDiv.innerHTML = `<img src="loading.gif"> Using ${modelId} to start the interview ...`;
+
+        try {
+          const response = await fetch(`/api/interview/start/${modelId}`, {
+            method: "POST",
+          });
+          const result = await response.json();
+
+          if (result.successful) {
+            messageDiv.innerHTML = `
+            <div style="color: green; margin-top: 20px; padding: 10px; border: 1px solid green; background-color: #f0fff0;">
+              <strong>Interview started successfully!</strong><br>
+              Using model: ${result.modelName}<br>
+              <h3>Logs:</h3>
+<pre>
+${result.logs.map((l) => "- " + l).join("\n")}
+</pre>
+            </div>
+          `;
+          } else {
+            messageDiv.innerHTML = `
+            <div style="color: red; margin-top: 20px; padding: 10px; border: 1px solid red; background-color: #fff0f0;">
+              <strong>Failed to start interview</strong><br>
+              <h3>Logs:</h3>
+<pre>
+${result.logs.map((l) => "- " + l).join("\n")}
+</pre>
+            </div>
+          `;
+          }
+        } catch (error) {
+          console.error("Error starting interview:", error);
+          messageDiv.innerHTML = `
+          <div style="color: red; margin-top: 20px; padding: 10px; border: 1px solid red; background-color: #fff0f0;">
+            <strong>Error:</strong> ${error.message}
+          </div>
+        `;
+        }
+
+        // Update model status
+        fetchModels();
+      }
+
+      async function remove(modelId) {
+        event.preventDefault();
+        const messageDiv = document.getElementById("Message");
+        messageDiv.innerHTML = `<img src="loading.gif"> Removing ${modelId} from the models ...`;
+
+        try {
+          const response = await fetch(`/api/models/${modelId}`, {
+            method: "DELETE",
+          });
+          const result = await response.json();
+
+          if (result.success) {
+            messageDiv.innerHTML = `
+            <div style="color: green; margin-top: 20px; padding: 10px; border: 1px solid green; background-color: #f0fff0;">
+              <strong>Model removed successfully!</strong><br>
+              Model ID: ${modelId}
+            </div>
+          `;
+          } else {
+            messageDiv.innerHTML = `
+            <div style="color: orange; margin-top: 20px; padding: 10px; border: 1px solid orange; background-color: #fff8f0;">
+              <strong>Model not found or already removed</strong><br>
+              Model ID: ${modelId}
+            </div>
+          `;
+          }
+        } catch (error) {
+          console.error("Error removing model:", error);
+          messageDiv.innerHTML = `
+          <div style="color: red; margin-top: 20px; padding: 10px; border: 1px solid red; background-color: #fff0f0;">
+            <strong>Error:</strong> ${error.message}
+          </div>
+        `;
+        }
+
+        // Update model list
+        fetchModels();
+      }
+
+      // Fetch data on load
+      fetchModels();
+
+      // Refresh every 60 seconds to match health check interval
+      setInterval(fetchModels, 60000);
+    </script>
+
+    <div id="Message"></div>
+  </body>
+</html>
